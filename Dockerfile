@@ -1,43 +1,26 @@
-FROM php:8.2-fpm
-
-# 1. Install system dependencies (Added nginx and libsqlite3-dev)
+# 1. Install system dependencies
 RUN apt-get update && apt-get install -y \
-    nginx \
-    git \
-    curl \
-    libpng-dev \
-    libonig-dev \
-    libxml2-dev \
-    libzip-dev \
-    zip \
-    unzip \
-    && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip
+    git unzip libzip-dev libpng-dev libonig-dev libxml2-dev
 
-# 2. Get Composer from the official image (Only need this once)
+# 2. Install PHP extensions
+RUN docker-php-ext-install pdo_mysql mbstring zip bcmath gd
+
+# 3. Get Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# 3. Set working directory
+# 4. Set Workdir
 WORKDIR /var/www
 
-# 4. Copy application files
+# 5. Copy ONLY composer files first (this leverages Docker caching)
+COPY composer.json composer.lock ./
+
+# 6. Install dependencies
+RUN php -d memory_limit=-1 /usr/bin/composer install \
+    --no-interaction \
+    --no-plugins \
+    --no-scripts \
+    --no-dev \
+    --prefer-dist
+
+# 7. Copy the rest of the app
 COPY . .
-
-# 5. Install Laravel dependencies
-# We run this after copying files so composer.json is present
-RUN composer install --no-dev --optimize-autoloader
-
-# 6. Set Permissions
-RUN chown -R www-data:www-data /var/www \
-    && chmod -R 775 /var/www/storage /var/www/bootstrap/cache
-
-# 7. Nginx config
-COPY nginx.conf /etc/nginx/sites-available/default
-# Ensure the symlink for Nginx is correct (standard for Debian/Ubuntu)
-RUN ln -sf /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
-
-# 8. Expose port
-EXPOSE 80
-
-# 9. Start Nginx and PHP-FPM
-# Using -g 'daemon off;' is vital so the container doesn't exit immediately
-CMD service nginx start && php-fpm
