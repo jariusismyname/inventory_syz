@@ -1,7 +1,8 @@
 #!/bin/sh
 
-# Start Nginx in the background
-nginx
+# 1. Start Nginx using the global 'daemon off' flag 
+# This tells Nginx to stay in the foreground so we can see its logs
+nginx -g "daemon off;" &
 
-# Start PHP-FPM in the foreground
+# 2. Start PHP-FPM in the foreground
 php-fpm
