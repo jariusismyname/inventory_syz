@@ -11,13 +11,13 @@ done
 
 #!/bin/sh
 
+#!/bin/sh
+
 set -e
 
 echo "Starting PHP-FPM..."
 php-fpm &
 
-echo "Waiting for PHP-FPM socket..."
-sleep 2
+echo "Starting Nginx (foreground)..."
+exec nginx -g "daemon off;"
 
-echo "Starting Nginx..."
-nginx -g "daemon off;"
