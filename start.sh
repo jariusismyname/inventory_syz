@@ -1,8 +1,10 @@
 #!/bin/sh
 
-# 1. Start Nginx using the global 'daemon off' flag 
-# This tells Nginx to stay in the foreground so we can see its logs
+# Run migrations (safe for free tier)
+php artisan migrate --force || true
+
+# Start Nginx in background
 nginx -g "daemon off;" &
 
-# 2. Start PHP-FPM in the foreground
+# Start PHP-FPM in foreground
 php-fpm
