@@ -1,10 +1,13 @@
 #!/bin/sh
 
-# Run migrations (safe for free tier)
-php artisan migrate --force || true
+echo "Waiting for database..."
 
-# Start Nginx in background
-nginx -g "daemon off;" &
+for i in 1 2 3 4 5
+do
+  php artisan migrate --force && break
+  echo "DB not ready, retrying in 5s..."
+  sleep 5
+done
 
-# Start PHP-FPM in foreground
-php-fpm
+php-fpm -D
+nginx -g "daemon off;"
