@@ -9,5 +9,15 @@ do
   sleep 5
 done
 
-php-fpm -D
+#!/bin/sh
+
+set -e
+
+echo "Starting PHP-FPM..."
+php-fpm &
+
+echo "Waiting for PHP-FPM socket..."
+sleep 2
+
+echo "Starting Nginx..."
 nginx -g "daemon off;"
