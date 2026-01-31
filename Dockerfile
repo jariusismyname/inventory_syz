@@ -1,17 +1,15 @@
 FROM php:8.2-fpm
 
-# Install system deps
 RUN apt-get update && apt-get install -y \
-    nginx \
     git \
     curl \
-    zip \
-    unzip \
     libpng-dev \
     libonig-dev \
     libxml2-dev \
-    libzip-dev
-    && docker-php-ext-install zip
+    libzip-dev \
+    zip \
+    unzip \
+    && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip
 # Example for a Debian/Ubuntu-based PHP image
 RUN php -d memory_limit=-1 /usr/bin/composer install --no-dev --optimize-autoloader
 # PHP extensions
