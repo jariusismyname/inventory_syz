@@ -1,20 +1,18 @@
 #!/bin/sh
+set -e
 
 echo "Waiting for database..."
 
-for i in 1 2 3 4 5
-do
-  php artisan config:clear
-php artisan config:cache
-
+# Simple DB retry loop (optional)
+until php artisan migrate:status > /dev/null 2>&1; do
+    echo "DB not ready, retrying in 5s..."
+    sleep 5
 done
 
-#!/bin/sh
+echo "Caching config..."
+php artisan config:clear
+php artisan config:cache
 
-#!/bin/sh
-
-set -e
-
-echo "Starting PHP-FPM..."
-php-fpm &
-
+echo "Starting PHP-FPM in foreground..."
+# php-fpm must run in foreground, not background
+exec php-fpm
