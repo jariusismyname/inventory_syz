@@ -1,46 +1,44 @@
 FROM php:8.4-fpm
 
-# 1. Install system dependencies (ADD NGINX HERE)
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
-    nginx \
     git \
     unzip \
     libzip-dev \
-    libpng-dev \
-    libonig-dev \
-    libxml2-dev \
-    && rm -rf /var/lib/apt/lists/*
+    curl \
+    wget \
+    gnupg \
+    && docker-php-ext-install pdo_mysql zip
 
-# 2. Install PHP extensions
-RUN docker-php-ext-install pdo_mysql mbstring zip bcmath gd
+# Install Node.js and npm (LTS)
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y nodejs
 
-# 3. Get Composer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-
-# 4. Set Workdir
+# Set working directory
 WORKDIR /var/www
 
-# 5. Copy App and Install
-COPY . .
+# Copy composer files and install PHP dependencies
+COPY composer.json composer.lock ./
 RUN composer install --no-dev --optimize-autoloader
-# Install npm dependencies and build assets
+
+# Copy all project files
+COPY . .
+
+# Install npm dependencies and build Vite assets
 RUN npm install
 RUN npm run build
 
-# 6. Nginx Setup
-# Copy your nginx.conf to the correct location
+# Set permissions
+RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
+
+# Copy Nginx config
 COPY nginx.conf /etc/nginx/sites-available/default
 RUN ln -sf /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
 
-# 7. Permissions (Crucial for Laravel)
-RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
-
-# 8. Start Script Setup
+# Copy entrypoint
 COPY start.sh /start.sh
 RUN chmod +x /start.sh
 
+# Expose port and start
 EXPOSE 80
-
 CMD ["/start.sh"]
-
-
