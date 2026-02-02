@@ -1,4 +1,3 @@
-# Stage 0: PHP + Composer + Node
 FROM php:8.4-fpm
 
 # Install system dependencies
@@ -24,12 +23,11 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 # Set working directory
 WORKDIR /var/www
 
-# Copy composer files and install PHP dependencies
-COPY composer.json composer.lock ./
-RUN composer install --no-dev --optimize-autoloader
-
-# Copy all project files
+# Copy everything first (artisan must exist for package:discover)
 COPY . .
+
+# Install PHP dependencies
+RUN composer install --no-dev --optimize-autoloader
 
 # Install JS dependencies & build Vite assets
 RUN npm install
