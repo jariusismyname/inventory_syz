@@ -23,6 +23,9 @@ WORKDIR /var/www
 # 5. Copy App and Install
 COPY . .
 RUN composer install --no-dev --optimize-autoloader
+# Install npm dependencies and build assets
+RUN npm install
+RUN npm run build
 
 # 6. Nginx Setup
 # Copy your nginx.conf to the correct location
