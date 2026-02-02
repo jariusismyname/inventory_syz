@@ -1,44 +1,36 @@
-FROM php:8.4-fpm
+# Stage 1 - Build Frontend (Vite)
+FROM node:18 AS frontend
+WORKDIR /app
+COPY package*.json ./
+RUN npm install
+COPY . .
+RUN npm run build
+
+# Stage 2 - Backend (Laravel + PHP + Composer)
+FROM php:8.2-fpm AS backend
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
-    git \
-    unzip \
-    libzip-dev \
-    curl \
-    wget \
-    gnupg \
-    && docker-php-ext-install pdo_mysql zip
+    git curl unzip libpq-dev libonig-dev libzip-dev zip \
+    && docker-php-ext-install pdo pdo_mysql mbstring zip
 
-# Install Node.js and npm (LTS)
-RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
-    && apt-get install -y nodejs
+# Install Composer
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# Set working directory
 WORKDIR /var/www
 
-# Copy composer files and install PHP dependencies
-COPY composer.json composer.lock ./
-RUN composer install --no-dev --optimize-autoloader
-
-# Copy all project files
+# Copy app files
 COPY . .
 
-# Install npm dependencies and build Vite assets
-RUN npm install
-RUN npm run build
+# Copy built frontend from Stage 1
+COPY --from=frontend /app/public/dist ./public/dist
 
-# Set permissions
-RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
+# Install PHP dependencies
+RUN composer install --no-dev --optimize-autoloader
 
-# Copy Nginx config
-COPY nginx.conf /etc/nginx/sites-available/default
-RUN ln -sf /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
+# Laravel setup
+RUN php artisan config:clear && \
+    php artisan route:clear && \
+    php artisan view:clear
 
-# Copy entrypoint
-COPY start.sh /start.sh
-RUN chmod +x /start.sh
-
-# Expose port and start
-EXPOSE 80
-CMD ["/start.sh"]
+CMD ["php-fpm"]
