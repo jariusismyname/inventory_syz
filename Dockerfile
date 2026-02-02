@@ -1,36 +1,22 @@
-# Stage 1 - Build Frontend (Vite)
-FROM node:18 AS frontend
-WORKDIR /app
-COPY package*.json ./
-RUN npm install
-COPY . .
-RUN npm run build  # outputs to /app/dist
+#!/bin/sh
 
-# Stage 2 - Backend (Laravel + PHP + Composer)
-FROM php:8.2-fpm AS backend
+echo "Waiting for database..."
 
-# System deps
-RUN apt-get update && apt-get install -y \
-    git curl unzip libpq-dev libonig-dev libzip-dev zip \
-    && docker-php-ext-install pdo pdo_mysql mbstring zip
+for i in 1 2 3 4 5
+do
+  php artisan config:clear
+php artisan config:cache
 
-# Composer
-COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+done
 
-WORKDIR /var/www
+#!/bin/sh
 
-# Laravel app files
-COPY . .
+#!/bin/sh
 
-# Copy built frontend from Stage 1
-COPY --from=frontend /app/dist ./public/dist
+set -e
 
-# Install PHP deps
-RUN composer install --no-dev --optimize-autoloader
+echo "Starting PHP-FPM..."
+php-fpm &
 
-# Laravel cache clear
-RUN php artisan config:clear \
- && php artisan route:clear \
- && php artisan view:clear
-
-CMD ["php-fpm"]
+echo "Starting Nginx (foreground)..."
+exec nginx -g "daemon off;"
