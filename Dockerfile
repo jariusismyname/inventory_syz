@@ -19,6 +19,8 @@ RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
 
 # Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+# Configure PHP-FPM to listen on port 80
+RUN sed -i 's|listen = .*|listen = 0.0.0.0:80|' /usr/local/etc/php-fpm.d/www.conf
 
 # Workdir
 WORKDIR /var/www
