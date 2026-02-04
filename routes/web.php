@@ -7,7 +7,14 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProductController;
+use Illuminate\Support\Facades\Artisan;
 
+Route::get('/reset-database', function () {
+    // This drops all tables and runs all migrations again
+    Artisan::call('migrate:fresh', ['--force' => true]);
+    
+    return "Database has been wiped and rebuilt successfully!";
+});
 Route::post('/checkout', [AdminController::class, 'checkout'])
     ->name('checkout');
 Route::delete('/inventory/{id}', [AdminController::class, 'destroy'])
