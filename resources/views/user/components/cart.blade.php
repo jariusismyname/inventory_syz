@@ -15,7 +15,6 @@
 
             @if(!$cart || count($cart) == 0)
               
-                <x-app-layout>
   <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -400,7 +399,6 @@
     
 </body>
 </html>
-</x-app-layout>
                 
             @else
 
