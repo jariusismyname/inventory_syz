@@ -1,22 +1,42 @@
-#!/bin/sh
+FROM php:8.4-fpm
 
-echo "Waiting for database..."
+# 1. Install system dependencies (ADD NGINX HERE)
+RUN apt-get update && apt-get install -y \
+    nginx \
+    git \
+    unzip \
+    libzip-dev \
+    libpng-dev \
+    libonig-dev \
+    libxml2-dev \
+    && rm -rf /var/lib/apt/lists/*
 
-for i in 1 2 3 4 5
-do
-  php artisan config:clear
-php artisan config:cache
+# 2. Install PHP extensions
+RUN docker-php-ext-install pdo_mysql mbstring zip bcmath gd
 
-done
+# 3. Get Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-#!/bin/sh
+# 4. Set Workdir
+WORKDIR /var/www
 
-#!/bin/sh
+# 5. Copy App and Install
+COPY . .
+RUN composer install --no-dev --optimize-autoloader
 
-set -e
+# 6. Nginx Setup
+# Copy your nginx.conf to the correct location
+COPY nginx.conf /etc/nginx/sites-available/default
+RUN ln -sf /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
 
-echo "Starting PHP-FPM..."
-php-fpm &
+# 7. Permissions (Crucial for Laravel)
+RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
 
-echo "Starting Nginx (foreground)..."
-exec nginx -g "daemon off;"
+# 8. Start Script Setup
+COPY start.sh /start.sh
+RUN chmod +x /start.sh
+
+EXPOSE 80
+
+CMD ["/start.sh"]
+
