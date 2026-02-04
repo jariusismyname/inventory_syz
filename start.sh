@@ -1,22 +1,19 @@
 #!/bin/sh
-
-echo "Waiting for database..."
-
-for i in 1 2 3 4 5
-do
-  php artisan config:clear
-php artisan config:cache
-
-done
-
-#!/bin/sh
-
-#!/bin/sh
-
 set -e
 
-echo "Starting PHP-FPM..."
-php-fpm &
+# 1. Wait for database and clear/cache config
+echo "Configuring Laravel..."
+php artisan config:clear
+php artisan config:cache
 
-echo "Starting Nginx (foreground)..."
+# 2. RUN MIGRATIONS (This fixes the 'table does not exist' error)
+echo "Running migrations..."
+php artisan migrate --force
+
+# 3. Start PHP-FPM in the background
+echo "Starting PHP-FPM..."
+php-fpm -D
+
+# 4. Start Nginx in the foreground
+echo "Starting Nginx..."
 exec nginx -g "daemon off;"
