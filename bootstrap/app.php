@@ -11,10 +11,14 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
     )
-    ->withMiddleware(function (Middleware $middleware): void {
+    ->withMiddleware(function (Middleware $middleware) {
+        // 1. Define your aliases
         $middleware->alias([
             'admin'=> \App\Http\Middleware\AdminMiddleware::class,
         ]);
+
+        // 2. Trust Render's proxy to fix "Mixed Content" (HTTP vs HTTPS)
+        $middleware->trustProxies(at: '*');
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
