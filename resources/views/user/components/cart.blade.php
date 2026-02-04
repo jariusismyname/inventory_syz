@@ -15,6 +15,7 @@
 
             @if(!$cart || count($cart) == 0)
               
+                <x-app-layout>
   <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -46,18 +47,16 @@
     <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
   <div class="container">
     <a class="navbar-brand" href="#"><span class="text-warning">Shop</span>Con</a>
-    
-    
-
-    <div>
-      <ul class="navbar-nav ms-auto mb-2 mb-lg-0"> 
+   
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ms-auto mb-2 mb-lg-0">       
         <li class="nav-item">
           <a class="nav-link" href="#home">Home</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="#addtocart">Shop</a>
         </li>
-        <li class="nav-item">
+         <li class="nav-item">
           <a class="nav-link" href="{{ route('user.orders') }}">My Orders</a>
         </li>
         <li class="nav-item">
@@ -75,6 +74,7 @@
         <li class="nav-item">
           <a class="nav-link" href="#contact">Contact</a>
         </li>
+                  
       </ul>
     </div>
   </div>
@@ -143,17 +143,23 @@
             </div>
           </div>
         </section>
-<section id="addtocart">
-<div class="py-10 max-w-4xl mx-auto">
-        
-        <div style="text-align: center; margin: auto; width: 800px; margin-top: 50px;" class="bg-white p-6 shadow rounded">
-    <p>Your cart is empty. Please fill in the cart to place order.</p>
-    <a style="display: inline-block; margin-top: 15px;" href="{{ route('admin.cart.add_page') }}">
-        <img style="width: 150px;" src="{{ asset('img/cart.png') }}" alt="Description of the image">
-    </a>
-</div>
-
-</div>
+<section id="addtocart" class="py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-8">
+                <div class="bg-white p-5 shadow rounded text-center">
+                    <p class="lead mb-4">Your cart is empty. Please fill in the cart to place order.</p>
+                    
+                    <a href="{{ route('admin.cart.add_page') }}" class="d-inline-block transition-transform">
+                        <img src="{{ asset('img/cart.png') }}" 
+                             alt="Cart" 
+                             class="img-fluid" 
+                             style="max-width: 150px; height: auto;">
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
 </section>
         <!-- products section -->
          <section id="products" class="products section-padding">
@@ -394,10 +400,11 @@
            </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
-   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script> 
+
     
 </body>
 </html>
+</x-app-layout>
                 
             @else
 
