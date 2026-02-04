@@ -1,6 +1,7 @@
 FROM php:8.4-fpm
 
-# 1. Install system dependencies (ADD NGINX HERE)
+  
+# 1. Install system dependencies (Added libpq-dev for PostgreSQL)
 RUN apt-get update && apt-get install -y \
     nginx \
     git \
@@ -9,11 +10,11 @@ RUN apt-get update && apt-get install -y \
     libpng-dev \
     libonig-dev \
     libxml2-dev \
+    libpq-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# 2. Install PHP extensions
-RUN docker-php-ext-install pdo_mysql mbstring zip bcmath gd
-
+# 2. Install PHP extensions (Added pdo_pgsql)
+RUN docker-php-ext-install pdo_pgsql mbstring zip bcmath gd
 # 3. Get Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
