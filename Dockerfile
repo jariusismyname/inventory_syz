@@ -32,14 +32,14 @@ RUN curl -sL https://deb.nodesource.com/setup_18.x | bash - && \
 COPY package*.json ./
 RUN npm install
 RUN npm run build
+
 # 6. Nginx Setup
 # Copy your nginx.conf to the correct location
 COPY nginx.conf /etc/nginx/sites-available/default
 RUN ln -sf /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
 
 # 7. Permissions (Crucial for Laravel)
-RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
-
+RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache /var/www/public
 # 8. Start Script Setup
 COPY start.sh /start.sh
 RUN chmod +x /start.sh
