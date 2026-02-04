@@ -1,6 +1,6 @@
 FROM php:8.4-fpm
 
-  
+
 # 1. Install system dependencies (Added libpq-dev for PostgreSQL)
 RUN apt-get update && apt-get install -y \
     nginx \
@@ -24,7 +24,14 @@ WORKDIR /var/www
 # 5. Copy App and Install
 COPY . .
 RUN composer install --no-dev --optimize-autoloader
+# Install Node.js and NPM
+RUN curl -sL https://deb.nodesource.com/setup_18.x | bash - && \
+    apt-get install -y nodejs
 
+# Install JS dependencies and build assets
+COPY package*.json ./
+RUN npm install
+RUN npm run build
 # 6. Nginx Setup
 # Copy your nginx.conf to the correct location
 COPY nginx.conf /etc/nginx/sites-available/default
