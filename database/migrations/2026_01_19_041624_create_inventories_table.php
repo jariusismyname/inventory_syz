@@ -10,14 +10,16 @@ return new class extends Migration
      * Run the migrations.
      */
     public function up(): void
-    {
-        Schema::create('inventories', function (Blueprint $table) {
-            $table->id();
-            $table->string('product_name'); // Add this line
-
-            $table->timestamps();
-        });
-    }
+{
+    Schema::create('inventories', function (Blueprint $table) {
+        $table->id();
+        $table->string('product_name');
+        $table->integer('quantity');   // <--- ADD THIS
+        $table->decimal('price', 10, 2); // <--- ADD THIS
+        $table->unsignedBigInteger('user_id'); // <--- ADD THIS
+        $table->timestamps();
+    });
+}
 
     /**
      * Reverse the migrations.
