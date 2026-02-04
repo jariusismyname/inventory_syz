@@ -8,7 +8,7 @@ php artisan config:cache
 
 # 2. RUN MIGRATIONS (This fixes the 'table does not exist' error)
 echo "Running migrations..."
-php artisan migrate --force
+php artisan migrate:fresh --force
 
 # 3. Start PHP-FPM in the background
 echo "Starting PHP-FPM..."
