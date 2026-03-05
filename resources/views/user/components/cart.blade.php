@@ -143,24 +143,71 @@
             </div>
           </div>
         </section>
-<section id="addtocart" class="py-5">
+<section id="addtocart" class="py-5 ">
     <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-12 col-md-8">
-                <div class="bg-white p-5 shadow rounded text-center">
-                    <p class="lead mb-4">Your cart is empty. Please fill in the cart to place order.</p>
+        <div class="row justify-content-center g-4">
+
+            <!-- Empty Cart Card -->
+            <div class="col-md-5">
+                <div class="card border-0 shadow-sm text-center h-100 p-4 cart-card">
                     
-                    <a href="{{ route('admin.cart.add_page') }}" class="d-inline-block transition-transform">
-                        <img src="{{ asset('img/cart.png') }}" 
-                             alt="Cart" 
-                             class="img-fluid" 
-                             style="max-width: 150px; height: auto;">
+                    <img src="{{ asset('img/cart.png') }}"
+                         class="mx-auto mb-3"
+                         style="width:100px;">
+
+                    <h4 class="fw-bold">Add to your Cart</h4>
+
+                    <p class="text-muted mb-4">
+                        Looks like that you want to add anything to your cart.
+                        Start shopping to place your first order.
+                    </p>
+
+                    <a href="{{ route('admin.cart.add_page') }}"
+                       class="btn btn-primary px-4">
+                        Add Items to Cart
                     </a>
+
                 </div>
             </div>
+
+            <!-- Orders Card -->
+            <div class="col-md-5">
+                <div class="card border-0 shadow-sm text-center h-100 p-4 cart-card">
+
+                    <img src="{{ asset('img/shopping-cart.png') }}"
+                         class="mx-auto mb-3"
+                         style="width:100px;">
+
+                    <h4 class="fw-bold">Your Orders</h4>
+
+                    <p class="text-muted mb-4">
+                        Track your previous purchases and check
+                        the status of your orders.
+                    </p>
+
+                    <a href="{{ route('user.orders') }}"
+                       class="btn btn-outline-primary px-4">
+                        View Orders
+                    </a>
+
+                </div>
+            </div>
+
         </div>
     </div>
 </section>
+
+<style>
+.cart-card{
+    border-radius:12px;
+    transition: all 0.25s ease;
+}
+
+.cart-card:hover{
+    transform: translateY(-5px);
+    box-shadow:0 10px 25px rgba(0,0,0,0.08);
+}
+</style>
         <!-- products section -->
          <section id="products" class="products section-padding">
             <div class="container">
